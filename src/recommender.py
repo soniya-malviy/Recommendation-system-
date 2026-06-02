@@ -20,7 +20,7 @@ class RecommendationEngine:
     interactions: pd.DataFrame
     content_similarity: pd.DataFrame
     user_item_matrix: pd.DataFrame
-    user_similarity: pd.DataFrame
+    user_similarity: pd.DataFrame | None = None
 
 
 @dataclass(frozen=True)
@@ -115,18 +115,12 @@ def build_engine(products: pd.DataFrame, interactions: pd.DataFrame) -> Recommen
         aggfunc="mean",
         fill_value=0,
     )
-    user_similarity = pd.DataFrame(
-        cosine_similarity(user_item_matrix),
-        index=user_item_matrix.index,
-        columns=user_item_matrix.index,
-    )
 
     return RecommendationEngine(
         products=products,
         interactions=interactions,
         content_similarity=content_similarity,
         user_item_matrix=user_item_matrix,
-        user_similarity=user_similarity,
     )
 
 
@@ -168,10 +162,12 @@ def user_based_recommendations(
     top_n: int = 5,
 ) -> pd.DataFrame:
     """Recommend unrated products using ratings from the most similar users."""
-    if user_id not in engine.user_similarity.index:
+    if user_id not in engine.user_item_matrix.index:
         raise ValueError(f"Unknown user_id: {user_id}")
 
-    similar_users = engine.user_similarity.loc[user_id].drop(labels=[user_id])
+    user_vec = engine.user_item_matrix.loc[[user_id]]
+    similarities = cosine_similarity(user_vec, engine.user_item_matrix).flatten()
+    similar_users = pd.Series(similarities, index=engine.user_item_matrix.index).drop(labels=[user_id])
     weighted_ratings = similar_users.dot(engine.user_item_matrix.loc[similar_users.index])
     normalizer = similar_users.abs().sum()
     predicted_scores = weighted_ratings / normalizer if normalizer else weighted_ratings
@@ -260,7 +256,7 @@ def evaluate_hybrid_recommender(
         user_id = str(row.user_id)
         heldout_product = str(row.product_id)
         user_history = train_interactions.loc[train_interactions["user_id"] == user_id]
-        if user_history.empty or user_id not in eval_engine.user_similarity.index:
+        if user_history.empty or user_id not in eval_engine.user_item_matrix.index:
             continue
 
         seed_product = str(
