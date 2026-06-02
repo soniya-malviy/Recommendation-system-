@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Amazon Product Recommender</title>
+    <link rel="stylesheet" href="/app.css?v=7" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-header">
+          <div class="amazon-mark" aria-label="Amazon style logo">
+            <span class="amazon-word">amazon</span>
+            <span class="amazon-smile"></span>
+          </div>
+          <div>
+            <p class="eyebrow">Recommendation workspace</p>
+            <h1>Amazon Product Recommender</h1>
+          </div>
+        </div>
+        <div class="top-actions">
+          <label class="search">
+            <span>Search</span>
+            <input id="searchInput" type="search" placeholder="Find products, brands, categories" />
+          </label>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="sidebar">
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>Inputs</h2>
+              <span id="productCount">Loading</span>
+            </div>
+
+            <label class="field">
+              <span>Product</span>
+              <select id="productSelect"></select>
+            </label>
+
+            <label class="field">
+              <span>User</span>
+              <select id="userSelect"></select>
+            </label>
+
+            <label class="field">
+              <span>Category</span>
+              <select id="categorySelect"></select>
+            </label>
+
+            <div class="split-fields">
+              <label class="field">
+                <span>Results</span>
+                <input id="topNInput" type="number" min="3" max="12" value="6" />
+              </label>
+              <label class="field">
+                <span>Content weight</span>
+                <input id="weightInput" type="number" min="0" max="1" step="0.05" value="0.55" />
+              </label>
+            </div>
+          </section>
+
+          <section class="selected-product" id="selectedProduct"></section>
+        </aside>
+
+        <section class="content">
+          <section class="stats" id="stats"></section>
+          <section class="metrics-panel" id="modelMetrics"></section>
+
+          <nav class="tabs" aria-label="Recommendation views">
+            <button class="tab is-active" data-tab="hybrid">Hybrid picks</button>
+            <button class="tab" data-tab="content">Similar products</button>
+            <button class="tab" data-tab="user">Similar users</button>
+          </nav>
+
+          <section class="results" id="results" aria-live="polite"></section>
+        </section>
+      </main>
+    </div>
+
+    <script src="/app.js?v=7"></script>
+  </body>
+</html>
