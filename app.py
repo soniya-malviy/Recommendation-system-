@@ -32,8 +32,13 @@ def get_engine():
     return create_engine()
 
 
-@lru_cache(maxsize=1)
+METRICS_CACHE = PUBLIC_DIR / "model_metrics.json"
+
+
 def get_model_metrics() -> dict[str, Any]:
+    if METRICS_CACHE.exists():
+        with open(METRICS_CACHE) as f:
+            return json.load(f)
     engine = get_engine()
     metrics = evaluate_hybrid_recommender(
         engine.products,
@@ -43,7 +48,10 @@ def get_model_metrics() -> dict[str, Any]:
         relevant_rating=4.0,
         max_users=200,
     )
-    return asdict(metrics)
+    payload = asdict(metrics)
+    with open(METRICS_CACHE, "w") as f:
+        json.dump(payload, f)
+    return payload
 
 
 def clean_text(value: Any) -> str:

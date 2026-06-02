@@ -1,0 +1,1 @@
+{"evaluated_users": 200, "k": 5, "precision_at_k": 0.095, "recall_at_k": 0.475, "f1_at_k": 0.15833333333333335, "hit_rate_at_k": 0.475, "map_at_k": 0.4365833333333333, "ndcg_at_k": 0.4462591010055707, "catalog_coverage": 0.7428571428571429}
